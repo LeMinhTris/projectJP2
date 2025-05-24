@@ -1,0 +1,30 @@
+# ============ INTELLIJ IDEA ============
+.idea/              # Thư mục cấu hình IDE, không nên chia sẻ
+*.iml               # File cấu hình module của IntelliJ
+
+# ============ MAVEN ============
+/target/            # Thư mục chứa file biên dịch (.class, .jar...), Maven sẽ tự tạo lại
+
+# ============ JAVA ============
+*.class             # File biên dịch .class
+*.log               # File log nếu có (chạy chương trình sinh ra)
+
+# ============ OS (macOS, Windows) ============
+.DS_Store           # macOS: file ẩn do Finder tạo
+Thumbs.db           # Windows: file cache icon
+
+# ============ VS CODE ============
+.vscode/            # Nếu có thành viên dùng VSCode, đây là cấu hình riêng
+
+# ============ TẠM / KHÁC ============
+*.tmp               # File tạm
+*.swp               # File swap khi dùng Vim hoặc trình soạn thảo khác
+
+# ============ CẤU HÌNH NHẠY CẢM ============
+.env                # File biến môi trường (thường chứa API key)
+*.properties        # Nếu chứa thông tin cấu hình có mật khẩu, key, v.v.
+credentials.json    # Thường chứa thông tin xác thực (Google, Firebase...)
+
+# ============ DATABASE ============
+*.db
+
