@@ -27,4 +27,5 @@ credentials.json    # Thường chứa thông tin xác thực (Google, Firebase.
 
 # ============ DATABASE ============
 *.db
+db.properties         # File cấu hình database, nếu có
 
