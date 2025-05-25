@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver-dev
+    platform: linux/amd64
+    ports:
+      - "1433:1433"  # Port SQL Server
+    environment:
+      SA_PASSWORD: "YourStrong!Password123"  # Set a strong SA password
+      ACCEPT_EULA: "Y"
+    volumes:
+      - sql_data:/var/opt/mssql  # Persist SQL Server data
+
+volumes:
+  sql_data:
