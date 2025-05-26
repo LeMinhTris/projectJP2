@@ -21,6 +21,7 @@ Thumbs.db           # Windows: file cache icon
 *.swp               # File swap khi dùng Vim hoặc trình soạn thảo khác
 
 # ============ CẤU HÌNH NHẠY CẢM ============
+src/main/resources/db.properties
 .env                # File biến môi trường (thường chứa API key)
 *.properties        # Nếu chứa thông tin cấu hình có mật khẩu, key, v.v.
 credentials.json    # Thường chứa thông tin xác thực (Google, Firebase...)
