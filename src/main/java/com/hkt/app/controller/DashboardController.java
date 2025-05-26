@@ -1,4 +1,4 @@
-package com.hkt.app;
+package com.hkt.app.controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
