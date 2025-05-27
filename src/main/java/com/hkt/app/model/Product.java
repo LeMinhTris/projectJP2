@@ -14,6 +14,7 @@ public class Product {
     // constructor
     public Product() {};
 
+    // Constructor 7 tham số (bỏ qua imageUrl)
     public Product(
             String id,
             String name,
@@ -21,8 +22,7 @@ public class Product {
             String unitName,
             int quantity,
             String categoryName,
-            String status,
-            String imageUrl) {
+            String status) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -30,8 +30,8 @@ public class Product {
         this.quantity = quantity;
         this.categoryName = categoryName;
         this.status = status;
-        this.imageUrl = imageUrl;
     }
+
 
     // GETTER
     public String getId() {
@@ -62,9 +62,9 @@ public class Product {
         return this.status;
     }
 
-    public String getImage() {
-        return this.imageUrl;
-    }
+//    public String getImage() {
+//        return this.imageUrl;
+//    }
 
     // SETTER
 
@@ -96,7 +96,7 @@ public class Product {
         this.status = status;
     }
 
-    public void setImage(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+//    public void setImage(String imageUrl) {
+//        this.imageUrl = imageUrl;
+//    }
 }
