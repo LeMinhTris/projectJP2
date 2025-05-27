@@ -5,17 +5,16 @@ import java.sql.*;
 import java.util.Properties;
 
 public class DBConnection {
-    private static Connection conn = null;
 
     public static Connection getConnection() {
-        if (conn != null) return conn;
+        Connection conn = null;
 
         try {
-            // we assume db.properties is in the resources folder
+            // Load file cấu hình db.properties trong resources
             Properties prop = new Properties();
             InputStream input = DBConnection.class.getClassLoader().getResourceAsStream("db.properties");
             if (input == null) {
-                throw new RuntimeException("not found db.properties file in resources");
+                throw new RuntimeException("❌ Không tìm thấy file db.properties trong resources!");
             }
             prop.load(input);
 
@@ -25,14 +24,17 @@ public class DBConnection {
             String user = prop.getProperty("db.user");
             String password = prop.getProperty("db.password");
 
-            String url = String.format("jdbc:sqlserver://%s:%s;databaseName=%s;encrypt=true;trustServerCertificate=true", host, port, dbName);
+            String url = String.format(
+                    "jdbc:sqlserver://%s:%s;databaseName=%s;encrypt=true;trustServerCertificate=true",
+                    host, port, dbName
+            );
 
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             conn = DriverManager.getConnection(url, user, password);
-            System.out.println("✅ Successful connection to database: " + dbName);
+            System.out.println("✅ Đã kết nối thành công đến cơ sở dữ liệu: " + dbName);
 
         } catch (Exception e) {
-            System.err.println("❌ Unable to connect to Database:");
+            System.err.println("❌ Lỗi khi kết nối CSDL:");
             e.printStackTrace();
         }
 
