@@ -155,25 +155,15 @@
                      </VBox>
 
                      <!-- Product Image -->
-                     <VBox spacing="5">
-                        <Label text="Product Image">
-                           <font>
-                              <Font name="System Bold" size="18.0" />
-                           </font>
-                        </Label>
-                        <HBox spacing="10">
-                           <TextField alignment="CENTER" prefWidth="200.0" text="No file chosen" />
-                           <Button mnemonicParsing="false" prefWidth="100.0" style="-fx-background-radius: 5;" text="Choose file" />
-                        </HBox>
-                     </VBox>
 
                      <!-- Buttons -->
                      <HBox prefWidth="874.0" spacing="20">
-                        <Button mnemonicParsing="false" prefWidth="100.0" style="-fx-background-radius: 5; -fx-background-color: #007BFF;" text="Create" textFill="WHITE">
+                        <Button fx:id="btnCreate" mnemonicParsing="false" prefWidth="100.0" style="-fx-background-radius: 5; -fx-background-color: #007BFF;" text="Create" textFill="WHITE" onAction="#handleCreateProduct">
                            <font>
                               <Font name="System Bold" size="14.0" />
-                           </font>
+                           </font>s
                         </Button>
+
                         <Button mnemonicParsing="false" prefWidth="100.0" style="-fx-background-radius: 5; -fx-background-color: #a6a6a6;" text="Reset" textFill="WHITE">
                            <font>
                               <Font name="System Bold" size="14.0" />
