@@ -1,11 +1,13 @@
 package com.hkt.app.controller;
-
+import javafx.application.Platform;
 import com.hkt.app.model.Product;
-import com.hkt.app.model.ProductData;
 import com.hkt.app.dao.UnitDAO;
 import com.hkt.app.dao.CategoryDAO;
+import com.hkt.app.dao.ProductDAO;
 import com.hkt.app.model.Unit;
 import com.hkt.app.model.Category;
+import javafx.scene.control.Alert;
+import java.util.stream.Collectors;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,7 +20,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
 
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class AddProductController implements Initializable {
+
 
     @FXML
     private Button btnCreate;
@@ -53,9 +55,10 @@ public class AddProductController implements Initializable {
     @FXML
     private TextField tfQuantity;
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Load dữ liệu vào cbUnit
+        // Load dữ liệu đơn vị
         List<Unit> units = UnitDAO.getAllUnits();
         ObservableList<String> unitNames = FXCollections.observableArrayList();
         for (Unit u : units) {
@@ -63,7 +66,7 @@ public class AddProductController implements Initializable {
         }
         cbUnit.setItems(unitNames);
 
-        // Load dữ liệu vào cbCategory
+        // Load dữ liệu danh mục
         List<Category> categories = CategoryDAO.getAllCategories();
         ObservableList<String> categoryNames = FXCollections.observableArrayList();
         for (Category c : categories) {
@@ -71,7 +74,7 @@ public class AddProductController implements Initializable {
         }
         cbCategory.setItems(categoryNames);
 
-        // Dữ liệu sẵn cho cbStatus
+        // Load trạng thái
         cbStatus.setItems(FXCollections.observableArrayList("Còn hàng", "Hết hàng"));
     }
 
@@ -121,11 +124,47 @@ public class AddProductController implements Initializable {
         tfId.setText(product.getId());
         tfName.setText(product.getName());
         tfPrice.setText(String.valueOf(product.getPrice()));
-        cbUnit.setValue(product.getUnitName());
-        cbCategory.setValue(product.getCategoryName());
         tfQuantity.setText(String.valueOf(product.getQuantity()));
-        cbStatus.setValue(product.getStatus());
+        tfId.setDisable(true);
+
+        // Load danh sách tên đơn vị
+        List<Unit> units = UnitDAO.getAllUnits();
+        ObservableList<String> unitNames = FXCollections.observableArrayList();
+        for (Unit u : units) {
+            unitNames.add(u.getName());
+        }
+        cbUnit.setItems(unitNames);
+
+        // Load danh sách tên danh mục
+        List<Category> categories = CategoryDAO.getAllCategories();
+        ObservableList<String> categoryNames = FXCollections.observableArrayList();
+        for (Category c : categories) {
+            categoryNames.add(c.getName());
+        }
+        cbCategory.setItems(categoryNames);
+
+        // Lấy tên đơn vị và danh mục từ id
+        String unitName = UnitDAO.getUnitNameById(product.getUnitId());
+        String categoryName = CategoryDAO.getCategoryNameById(product.getCategoryId());
+
+        // Set giá trị tương ứng trong dropdown
+        if (unitName != null && unitNames.contains(unitName)) {
+            cbUnit.setValue(unitName);
+        }
+
+        if (categoryName != null && categoryNames.contains(categoryName)) {
+            cbCategory.setValue(categoryName);
+        }
+
+        // Set trạng thái
+        cbStatus.setValue("1".equals(product.getStatus()) ? "Còn hàng" : "Hết hàng");
     }
+
+
+
+
+
+
 
     @FXML
     private void handleCreateProduct(ActionEvent event) {
@@ -133,20 +172,42 @@ public class AddProductController implements Initializable {
             String id = tfId.getText().trim();
             String name = tfName.getText().trim();
             double price = Double.parseDouble(tfPrice.getText().trim());
-            String unit = cbUnit.getValue();
+            String unitName = cbUnit.getValue();
             int quantity = Integer.parseInt(tfQuantity.getText().trim());
-            String category = cbCategory.getValue();
-            String status = cbStatus.getValue();
+            String categoryName = cbCategory.getValue();
+            String statusText = cbStatus.getValue();
 
-            if (id.isEmpty() || name.isEmpty() || unit == null || category == null || status == null) {
+            if (id.isEmpty() || name.isEmpty() || unitName == null || categoryName == null || statusText == null) {
                 System.out.println("Vui lòng nhập đầy đủ thông tin.");
                 return;
             }
 
-            Product newProduct = new Product(id, name, price, unit, quantity, category, status);
-            ProductData.addProduct(newProduct);
-            System.out.println("Tạo sản phẩm thành công: " + newProduct);
-            resetForm();
+            String status = "Hết hàng".equals(statusText) ? "0" : "1";
+            int unitId = UnitDAO.getUnitIdByName(unitName);
+            int categoryId = CategoryDAO.getCategoryIdByName(categoryName);
+
+            // Tạo đối tượng Product với đầy đủ trường
+            Product newProduct = new Product(id, name, price, unitId, quantity, categoryId, categoryName, status);
+
+            // Gọi DAO để lưu
+            boolean success = ProductDAO.insertProduct(newProduct);
+
+            if (success) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thành công");
+                alert.setHeaderText(null);
+                alert.setContentText("Sản phẩm đã được thêm thành công!");
+                alert.showAndWait();
+
+                changToProduct(event);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Thất bại");
+                alert.setHeaderText(null);
+                alert.setContentText("Không thể thêm sản phẩm. Vui lòng thử lại!");
+                alert.showAndWait();
+            }
+
 
         } catch (NumberFormatException e) {
             System.out.println("Giá tiền và số lượng phải là số hợp lệ.");
@@ -164,4 +225,66 @@ public class AddProductController implements Initializable {
         cbCategory.setValue(null);
         cbStatus.setValue(null);
     }
+    @FXML
+    private void handleUpdateProduct(ActionEvent event) {
+        try {
+            String id = tfId.getText().trim();
+            String name = tfName.getText().trim();
+            double price = Double.parseDouble(tfPrice.getText().trim());
+            String unitName = cbUnit.getValue();  // Lấy tên đơn vị
+            int quantity = Integer.parseInt(tfQuantity.getText().trim());
+            String categoryName = cbCategory.getValue();
+            String statusText = cbStatus.getValue();
+            if (id.isEmpty() || name.isEmpty() || unitName == null || categoryName == null || statusText == null) {
+                System.out.println("Vui lòng nhập đầy đủ thông tin.");
+                return;
+            }
+
+            // Chuyển trạng thái sang giá trị trong DB (0 hoặc 1)
+            String status = "Hết hàng".equals(statusText) ? "0" : "1";
+
+            // Lấy id của đơn vị dựa trên tên
+            int unitId = UnitDAO.getUnitIdByName(unitName);
+            if (unitId == -1) {
+                System.out.println("Đơn vị không hợp lệ.");
+                return;
+            }
+
+            // Lấy id của category dựa trên tên
+            int categoryId = CategoryDAO.getCategoryIdByName(categoryName);
+            if (categoryId == -1) {
+                System.out.println("Danh mục không hợp lệ.");
+                return;
+            }
+
+            // Tạo đối tượng Product với unitId, categoryId
+            Product updatedProduct = new Product(id, name, price, unitId, quantity, categoryId, categoryName, status);
+
+            // Gọi hàm cập nhật
+            boolean success = ProductDAO.updateProduct(updatedProduct);
+
+            if (success) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Thành công");
+                alert.setHeaderText(null);
+                alert.setContentText("Sản phẩm đã được thêm thành công!");
+                alert.showAndWait();
+
+                changToProduct(event);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Thất bại");
+                alert.setHeaderText(null);
+                alert.setContentText("Không thể thêm sản phẩm. Vui lòng thử lại!");
+                alert.showAndWait();
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("Giá tiền và số lượng phải là số hợp lệ.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

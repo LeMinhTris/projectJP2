@@ -1,0 +1,139 @@
+[33mcommit 41cf8c77985f9e694c5a3c6e570d02b1d060baee[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mKhoi[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: eaa859c 08b255a
+Author: fw Huỳnh Nhựt Khôi <fwhuynhnhutkhoi@gmail.com>
+Date:   Tue May 27 14:53:30 2025 +0700
+
+    Khoi (#12)
+    
+    an nhieu r
+
+[33mcommit 08b255afd61966cce307505a0d2f5778b4a5c011[m[33m ([m[1;31morigin/Khoi[m[33m)[m
+Author: leminhtri <104387503+LeMinhTris@users.noreply.github.com>
+Date:   Tue May 27 14:50:59 2025 +0700
+
+    Delete target directory
+
+[33mcommit f064d114267d4c09b3799d5c2487fdc4d4bf3c39[m
+Author: leminhtri <104387503+LeMinhTris@users.noreply.github.com>
+Date:   Tue May 27 14:50:45 2025 +0700
+
+    Delete .idea directory
+
+[33mcommit 3b907bfb240940edbbdf3f3816e78588dddcb213[m
+Author: fwhuynhnhutkhoi <fwhuynhnhutkhoi@gmail.com>
+Date:   Tue May 27 14:29:10 2025 +0700
+
+    Sua may cai nut bro
+
+[33mcommit eaa859cc3a6450436e264b3e92c631b75d53ca44[m
+Merge: d94ec73 96214ed
+Author: fw Huỳnh Nhựt Khôi <fwhuynhnhutkhoi@gmail.com>
+Date:   Tue May 27 14:17:34 2025 +0700
+
+    update file DBConnection (#11)
+
+[33mcommit 96214ed0d80e50c53d8b39323a98954dbd1dce7d[m
+Author: fwhuynhnhutkhoi <fwhuynhnhutkhoi@gmail.com>
+Date:   Tue May 27 14:04:10 2025 +0700
+
+    update file DBConnection
+
+[33mcommit d94ec7392e21eedbd79f6ecc10f38c53bd780957[m[33m ([m[1;31morigin/Hau[m[33m, [m[1;32mmain[m[33m)[m
+Author: LeMinhTris <leminhtri260903@gmail.com>
+Date:   Tue May 27 05:17:38 2025 +0700
+
+    fix data github
+
+[33mcommit ed93d171641d14855a2f147a10c98fd820f85a7d[m
+Author: leminhtri <leminhtri260903@gmail.com>
+Date:   Mon May 26 14:59:40 2025 +0700
+
+    update location package for controller
+
+[33mcommit c66173bbcf414571fb51f481bbb158470517e8b9[m
+Author: leminhtri <leminhtri260903@gmail.com>
+Date:   Mon May 26 14:15:31 2025 +0700
+
+    update ./safe.sh
+
+[33mcommit d1cf2244d1b42b7af871dc122ded33c1d87884f1[m
+Merge: 4b5d26a 89dd970
+Author: MTH <chunhau.py@gmail.com>
+Date:   Sun May 25 21:35:38 2025 +0700
+
+    them toan bo 7 trang App + dashboard, product, addProduct (fxml, cont… (#7)
+
+[33mcommit 89dd97022b8fba2c9507bfab3373febb41e21183[m
+Author: MTH <chunhau.py@gmail.com>
+Date:   Sun May 25 21:32:47 2025 +0700
+
+    them toan bo 7 trang App + dashboard, product, addProduct (fxml, controller)
+
+[33mcommit 4b5d26a8fb6bf0f31caf2cf0abc0430510405f2a[m
+Merge: 2d8770f 6d257d0
+Author: MTH <chunhau.py@gmail.com>
+Date:   Sun May 25 21:10:47 2025 +0700
+
+    them dashboard va product (fxml + controller) + upudate App.java (#6)
+
+[33mcommit 6d257d060eb2b6ea86029f1207de7ad131271b88[m
+Author: MTH <chunhau.py@gmail.com>
+Date:   Sun May 25 21:08:49 2025 +0700
+
+    them dashboard va product (fxml + controller) + upudate App.java
+
+[33mcommit 2d8770fa8eb3c36ba358dc0cd2977b0e80044ca1[m
+Merge: 7a183a0 87c6ae5
+Author: MTH <chunhau.py@gmail.com>
+Date:   Sun May 25 20:34:55 2025 +0700
+
+    test (#4)
+
+[33mcommit 87c6ae589b8586bf47bd1e0704e44c3df093e58c[m
+Author: MTH <chunhau.py@gmail.com>
+Date:   Sun May 25 20:31:43 2025 +0700
+
+    test
+
+[33mcommit 7a183a025a99282911e1e0729e751845ae79cf33[m
+Author: leminhtri <leminhtri260903@gmail.com>
+Date:   Sun May 25 18:04:52 2025 +0700
+
+    update file can bo qua tranh xung dot trong tuong lai
+
+[33mcommit 9f16efce0e213526ba86592b411455056ddfba50[m
+Author: leminhtri <leminhtri260903@gmail.com>
+Date:   Sun May 25 17:59:12 2025 +0700
+
+    Add database
+
+[33mcommit ed8dc114266d2f0319b22a56ec4e0223e0b8cd19[m
+Merge: 8f09cc5 3e6d500
+Author: MTH <chunhau.py@gmail.com>
+Date:   Sat May 24 21:45:59 2025 +0700
+
+    test (#1)
+
+[33mcommit 3e6d5007317308df5db2ca7bc9aa3183216e5a01[m
+Author: MTH <chunhau.py@gmail.com>
+Date:   Sat May 24 21:44:02 2025 +0700
+
+    test
+
+[33mcommit 8f09cc582233ad4bdf469eacc7d0be7edd560f54[m
+Author: leminhtri <leminhtri260903@gmail.com>
+Date:   Sat May 24 18:59:06 2025 +0700
+
+    update
+
+[33mcommit b3afde3042a6f8bf7cf057d5984ec24e6996841b[m
+Author: leminhtri <leminhtri260903@gmail.com>
+Date:   Sat May 24 17:47:34 2025 +0700
+
+    Remove IDE, build, OS-specific files from Git tracking
+
+[33mcommit 370a927a90cc84c5ca857e6f29e51dc0cee5eafa[m
+Author: leminhtri <leminhtri260903@gmail.com>
+Date:   Sat May 24 17:31:52 2025 +0700
+
+    Initial commit - clean project with .gitignore
