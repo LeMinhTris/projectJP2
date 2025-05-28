@@ -106,11 +106,12 @@
                            </font>s
                         </Button>
 
-                        <Button mnemonicParsing="false" prefWidth="100.0" style="-fx-background-radius: 5; -fx-background-color: #a6a6a6;" text="Reset" textFill="WHITE">
+                        <Button fx:id="btnReset" mnemonicParsing="false" prefWidth="100.0" style="-fx-background-radius: 5; -fx-background-color: #a6a6a6;" text="Reset" textFill="WHITE" onAction="#handleResetFormClear">
                            <font>
                               <Font name="System Bold" size="14.0" />
                            </font>
                         </Button>
+
                      </HBox>
 
                      <!-- Product Description -->

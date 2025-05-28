@@ -57,4 +57,12 @@ VALUES
     ('P006', N'Oreo Cookies', 1.75, 120, 2, 2, 1, N'Chocolate sandwich cookies', N'https://example.com/images/oreo.jpg'),
     ('P007', N'Banana', 0.80, 90, 3, 4, 1, N'Local ripe bananas', N'https://example.com/images/banana.jpg');
 
+ALTER TABLE products
+ADD CONSTRAINT FK_products_units
+FOREIGN KEY (unit_id) REFERENCES units(id);
 
+
+ALTER TABLE products
+ADD CONSTRAINT fk_product_category
+FOREIGN KEY (category_id)
+REFERENCES categories(id);
