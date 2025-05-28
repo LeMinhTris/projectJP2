@@ -1,5 +1,8 @@
 package com.hkt.app.controller;
 
+import javafx.scene.layout.HBox;
+import javafx.geometry.Pos;
+
 import javafx.beans.property.ReadOnlyStringWrapper;
 import com.hkt.app.database.DBConnection;
 import com.hkt.app.model.Product;
@@ -12,11 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -26,19 +25,17 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-import java.util.ResourceBundle;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
 import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class ProductController implements Initializable {
 
     @FXML
-    private javafx.scene.control.TextField txtSearch;
-
+    private TextField txtSearch;
 
     @FXML
     private ImageView avatarImage1;
+
     @FXML
     private TableColumn<Product, Void> colActions;
 
@@ -48,9 +45,6 @@ public class ProductController implements Initializable {
     @FXML
     private TableColumn<Product, String> colID;
 
-//    @FXML
-//    private TableColumn<Product, String> colImage;
-
     @FXML
     private TableColumn<Product, String> colName;
 
@@ -58,8 +52,7 @@ public class ProductController implements Initializable {
     private TableColumn<Product, Double> colPrice;
 
     @FXML
-    TableColumn<Product, String> colStatus = new TableColumn<>("Trạng thái");
-//    private TableColumn<Product, String> colStatus;
+    TableColumn<Product, String> colStatus = new TableColumn<>("Status");
 
     @FXML
     private TableColumn<Product, String> colUnit;
@@ -70,7 +63,6 @@ public class ProductController implements Initializable {
     @FXML
     private TableView<Product> tvProducts;
 
-    // DB fields
     Statement st;
     ResultSet rs;
     PreparedStatement ps;
@@ -81,15 +73,10 @@ public class ProductController implements Initializable {
     void changToAdd(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/addProduct.fxml"));
         Parent root = fxmlLoader.load();
-
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setWidth(1220);
-        stage.setHeight(660);
+        stage.setScene(new Scene(root, 1220, 660));
         stage.setResizable(false);
         stage.setTitle("Convenient Store Management");
-        stage.setScene(scene);
         stage.show();
     }
 
@@ -97,15 +84,10 @@ public class ProductController implements Initializable {
     void changToDashboard(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/dashboard.fxml"));
         Parent root = fxmlLoader.load();
-
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setWidth(1220);
-        stage.setHeight(660);
+        stage.setScene(new Scene(root, 1220, 660));
         stage.setResizable(false);
         stage.setTitle("Convenient Store Management");
-        stage.setScene(scene);
         stage.show();
     }
 
@@ -113,15 +95,10 @@ public class ProductController implements Initializable {
     void changToProduct(ActionEvent event) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/product.fxml"));
         Parent root = fxmlLoader.load();
-
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-
-        stage.setWidth(1220);
-        stage.setHeight(660);
+        stage.setScene(new Scene(root, 1220, 660));
         stage.setResizable(false);
         stage.setTitle("Convenient Store Management");
-        stage.setScene(scene);
         stage.show();
     }
 
@@ -135,7 +112,9 @@ public class ProductController implements Initializable {
                     p.id,
                     p.name,
                     p.price,
+                    p.unit_id,
                     p.quantity,
+                    p.category_id,
                     u.name AS unit_name,
                     c.name AS category_name,
                     p.status,
@@ -153,19 +132,20 @@ public class ProductController implements Initializable {
                 String id = rs.getString("id");
                 String name = rs.getString("name");
                 double price = rs.getDouble("price");
+                int unitId = rs.getInt("unit_id");
                 String unitName = rs.getString("unit_name");
                 int quantity = rs.getInt("quantity");
+                int categoryId = rs.getInt("category_id");
                 String categoryName = rs.getString("category_name");
                 String status = rs.getString("status");
                 String imageUrl = rs.getString("image_url");
 
-                Product newPro = new Product(id, name, price, unitName, quantity, categoryName, status);
+                Product newPro = new Product(id, name, price, unitId, unitName, quantity, categoryId, categoryName, status);
                 productList.add(newPro);
             }
         } catch (SQLException e) {
-            System.out.println("Something went wrong!\n");
+            System.out.println("Something went wrong!");
             e.printStackTrace();
-            System.out.println();
         }
 
         return productList;
@@ -179,15 +159,13 @@ public class ProductController implements Initializable {
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         colCategory.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
         colStatus.setCellValueFactory(cellData -> {
-            String status = cellData.getValue().getStatus(); // bây giờ là String
-            String display = "Hết hàng";
+            String status = cellData.getValue().getStatus();
+            String display = "Out of stock";
             if ("1".equals(status)) {
-                display = "Còn hàng";
+                display = "Available";
             }
             return new ReadOnlyStringWrapper(display);
         });
-
-//        colImage.setCellValueFactory(new PropertyValueFactory<>("imageUrl"));
 
         addButtonToTable();
 
@@ -199,90 +177,66 @@ public class ProductController implements Initializable {
     }
 
     private void addButtonToTable() {
-        Callback<TableColumn<Product, Void>, TableCell<Product, Void>> cellFactory = new Callback<>() {
+        Callback<TableColumn<Product, Void>, TableCell<Product, Void>> cellFactory = param -> new TableCell<>() {
+            private final Button btnEdit = new Button("Update");
+            private final Button btnDelete = new Button("Delete");
+            double scale = 0.8;
+            int scaledFontSize = (int) (14 * scale);
+            int scaledPaddingTB = (int) (8 * scale);
+            int scaledPaddingLR = (int) (16 * scale);
+            String btnStyleBase = String.format(
+                    "-fx-font-size: %dpx;" +
+                            "-fx-padding: %d %d;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-background-radius: 8;" +
+                            "-fx-cursor: hand;" +
+                            "-fx-alignment: center;",
+                    scaledFontSize, scaledPaddingTB, scaledPaddingLR
+            );
+
+            {
+                btnEdit.setAlignment(Pos.CENTER);
+                btnDelete.setAlignment(Pos.CENTER);
+
+                btnEdit.setStyle("-fx-background-color: #4CAF50;" + "-fx-text-fill: white;" + btnStyleBase);
+                btnEdit.setOnMouseEntered(e -> btnEdit.setStyle("-fx-background-color: #45a049;" + "-fx-text-fill: white;" + btnStyleBase));
+                btnEdit.setOnMouseExited(e -> btnEdit.setStyle("-fx-background-color: #4CAF50;" + "-fx-text-fill: white;" + btnStyleBase));
+
+                btnDelete.setStyle("-fx-background-color: #f44336;" + "-fx-text-fill: white;" + btnStyleBase);
+                btnDelete.setOnMouseEntered(e -> btnDelete.setStyle("-fx-background-color: #da190b;" + "-fx-text-fill: white;" + btnStyleBase));
+                btnDelete.setOnMouseExited(e -> btnDelete.setStyle("-fx-background-color: #f44336;" + "-fx-text-fill: white;" + btnStyleBase));
+
+                btnEdit.setOnAction(event -> {
+                    Product product = getTableView().getItems().get(getIndex());
+                    try {
+                        goToUpdatePage(product, null);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                btnDelete.setOnAction(event -> {
+                    Product product = getTableView().getItems().get(getIndex());
+                    confirmAndDeleteProduct(product);
+                });
+            }
+
             @Override
-            public TableCell<Product, Void> call(final TableColumn<Product, Void> param) {
-                return new TableCell<>() {
-                    private final Button btnEdit = new Button("Update");
-                    private final Button btnDelete = new Button("Delete");
-
-                    {
-                        // Style cho nút Update (màu xanh, bo góc, hover nhẹ)
-                        btnEdit.setStyle(
-                                "-fx-background-color: #4CAF50;" +   // màu xanh lá
-                                        "-fx-text-fill: white;" +             // chữ màu trắng
-                                        "-fx-font-weight: bold;" +
-                                        "-fx-background-radius: 8;" +        // bo góc
-                                        "-fx-cursor: hand;"
-                        );
-                        btnEdit.setOnMouseEntered(e -> btnEdit.setStyle(
-                                "-fx-background-color: #45a049;" +
-                                        "-fx-text-fill: white;" +
-                                        "-fx-font-weight: bold;" +
-                                        "-fx-background-radius: 8;" +
-                                        "-fx-cursor: hand;"
-                        ));
-                        btnEdit.setOnMouseExited(e -> btnEdit.setStyle(
-                                "-fx-background-color: #4CAF50;" +
-                                        "-fx-text-fill: white;" +
-                                        "-fx-font-weight: bold;" +
-                                        "-fx-background-radius: 8;" +
-                                        "-fx-cursor: hand;"
-                        ));
-
-                        // Style cho nút Delete (màu đỏ, bo góc, hover nhẹ)
-                        btnDelete.setStyle(
-                                "-fx-background-color: #f44336;" +   // màu đỏ
-                                        "-fx-text-fill: white;" +
-                                        "-fx-font-weight: bold;" +
-                                        "-fx-background-radius: 8;" +
-                                        "-fx-cursor: hand;"
-                        );
-                        btnDelete.setOnMouseEntered(e -> btnDelete.setStyle(
-                                "-fx-background-color: #da190b;" +
-                                        "-fx-text-fill: white;" +
-                                        "-fx-font-weight: bold;" +
-                                        "-fx-background-radius: 8;" +
-                                        "-fx-cursor: hand;"
-                        ));
-                        btnDelete.setOnMouseExited(e -> btnDelete.setStyle(
-                                "-fx-background-color: #f44336;" +
-                                        "-fx-text-fill: white;" +
-                                        "-fx-font-weight: bold;" +
-                                        "-fx-background-radius: 8;" +
-                                        "-fx-cursor: hand;"
-                        ));
-
-                        btnEdit.setOnAction(event -> {
-                            Product product = getTableView().getItems().get(getIndex());
-                            try {
-                                goToUpdatePage(product, null);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        });
-
-                        btnDelete.setOnAction(event -> {
-                            Product product = getTableView().getItems().get(getIndex());
-                            confirmAndDeleteProduct(product);
-                        });
-                    }
-
-                    @Override
-                    public void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            setGraphic(new javafx.scene.layout.HBox(10, btnEdit, btnDelete));
-                        }
-                    }
-                };
+            public void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    HBox hBox = new HBox(10, btnEdit, btnDelete);
+                    hBox.setAlignment(Pos.CENTER);
+                    hBox.setPrefWidth(Double.MAX_VALUE);
+                    setGraphic(hBox);
+                    setAlignment(Pos.CENTER);
+                }
             }
         };
         colActions.setCellFactory(cellFactory);
     }
-
 
     private void deleteProduct(Product product) {
         Connection conn = connection.getConnection();
@@ -292,10 +246,10 @@ public class ProductController implements Initializable {
             ps.setString(1, product.getId());
             int result = ps.executeUpdate();
             if (result > 0) {
-                System.out.println("Xóa sản phẩm thành công: " + product.getId());
-                showProduct(); // refresh lại danh sách sau khi xóa
+                System.out.println("Product deleted successfully: " + product.getId());
+                showProduct();
             } else {
-                System.out.println("Xóa sản phẩm thất bại: " + product.getId());
+                System.out.println("Failed to delete product: " + product.getId());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -307,7 +261,7 @@ public class ProductController implements Initializable {
         Parent root = loader.load();
 
         AddProductController controller = loader.getController();
-        controller.setProduct(product); // <-- Gọi sau khi đã load xong FXML
+        controller.setProduct(product);
 
         Stage stage;
         if (event != null) {
@@ -316,11 +270,9 @@ public class ProductController implements Initializable {
             stage = (Stage) tvProducts.getScene().getWindow();
         }
 
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
+        stage.setScene(new Scene(root));
         stage.show();
     }
-
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -341,23 +293,24 @@ public class ProductController implements Initializable {
             return row;
         });
     }
+
     private void confirmAndDeleteProduct(Product product) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Xác nhận xóa");
-        alert.setHeaderText("Bạn có chắc muốn xóa sản phẩm này không?");
-        alert.setContentText("Sản phẩm: " + product.getName());
+        alert.setTitle("Delete Confirmation");
+        alert.setHeaderText("Are you sure you want to delete this product?");
+        alert.setContentText("Product: " + product.getName());
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             deleteProduct(product);
         }
-        // Nếu người dùng chọn Cancel hoặc đóng hộp thoại thì không làm gì
     }
+
     @FXML
     private void handleSearch(ActionEvent event) {
         String keyword = txtSearch.getText().toLowerCase().trim();
         if (keyword.isEmpty()) {
-            tvProducts.setItems(getProducts()); // reset nếu không nhập gì
+            tvProducts.setItems(getProducts());
             return;
         }
 
@@ -370,7 +323,4 @@ public class ProductController implements Initializable {
 
         tvProducts.setItems(filteredList);
     }
-
-
-
 }

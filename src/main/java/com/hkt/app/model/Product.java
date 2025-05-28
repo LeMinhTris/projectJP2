@@ -1,31 +1,35 @@
 package com.hkt.app.model;
 
 public class Product {
-    private String unitName;  // phải có biến này
-
-    public String getUnitName() {  // phải có getter này
-        return unitName;
-    }
-
-    public void setUnitName(String unitName) {
-        this.unitName = unitName;
-    }
-
-    // field
+    // Fields
     private String id;
     private String name;
     private double price;
-    private int unitId;             // dùng ID để liên kết với bảng Unit
+    private int unitId;             // ID của đơn vị (unit)
+    private String unitName;        // Tên đơn vị
     private int quantity;
-    private int categoryId;         // Sửa: đổi từ String sang int
-    private String categoryName;
+    private int categoryId;         // ID của danh mục (category)
+    private String categoryName;    // Tên danh mục
     private String status;
     private String imageUrl;
 
     // Constructor mặc định
     public Product() {}
 
-    // Constructor có 7 tham số (như bạn có trước đây)
+    // ✅ Constructor đầy đủ: dùng khi load từ DB (có cả ID & Name của unit/category)
+    public Product(String id, String name, double price, int unitId, String unitName, int quantity, int categoryId, String categoryName, String status) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.unitId = unitId;
+        this.unitName = unitName;
+        this.quantity = quantity;
+        this.categoryId = categoryId;
+        this.categoryName = categoryName;
+        this.status = status;
+    }
+
+    // ✅ Constructor cũ để tương thích nếu cần
     public Product(String id, String name, double price, String unitName, int quantity, String categoryName, String status) {
         this.id = id;
         this.name = name;
@@ -36,58 +40,49 @@ public class Product {
         this.status = status;
     }
 
-    // Constructor mới có 8 tham số (đúng với chỗ bạn gọi)
-    public Product(String id, String name, double price, int unitId, int quantity, int categoryId, String categoryName, String status) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.unitId = unitId;
-        this.quantity = quantity;
-        this.categoryId = categoryId;
-        this.categoryName = categoryName;
-        this.status = status;
-    }
-
     // GETTER
     public String getId() {
-        return this.id;
+        return id;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public double getPrice() {
-        return this.price;
+        return price;
     }
 
     public int getUnitId() {
-        return this.unitId;
+        return unitId;
+    }
+
+    public String getUnitName() {
+        return unitName;
     }
 
     public int getQuantity() {
-        return this.quantity;
+        return quantity;
     }
 
     public int getCategoryId() {
-        return this.categoryId;
+        return categoryId;
     }
 
     public String getCategoryName() {
-        return this.categoryName;
+        return categoryName;
     }
 
     public String getStatus() {
-        return this.status;
+        return status;
     }
 
-    // Method mới để trả về mô tả trạng thái
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
     public String getStatusDescription() {
-        if ("1".equals(this.status)) {
-            return "còn hàng";
-        } else {
-            return "hết hàng";
-        }
+        return "1".equals(this.status) ? "còn hàng" : "hết hàng";
     }
 
     // SETTER
@@ -107,6 +102,10 @@ public class Product {
         this.unitId = unitId;
     }
 
+    public void setUnitName(String unitName) {
+        this.unitName = unitName;
+    }
+
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
@@ -121,5 +120,9 @@ public class Product {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

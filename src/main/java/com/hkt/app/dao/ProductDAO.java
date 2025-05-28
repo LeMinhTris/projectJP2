@@ -6,6 +6,11 @@ import com.hkt.app.database.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 
 public class ProductDAO {
 
@@ -15,7 +20,6 @@ public class ProductDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            System.out.println("DEBUG: Chuẩn bị thêm sản phẩm: " + product);
 
             pstmt.setString(1, product.getId());
             pstmt.setString(2, product.getName());
@@ -44,7 +48,6 @@ public class ProductDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            System.out.println("DEBUG: Chuẩn bị cập nhật sản phẩm: " + product);
 
             pstmt.setString(1, product.getName());
             pstmt.setDouble(2, product.getPrice());
@@ -56,14 +59,29 @@ public class ProductDAO {
 
             int affectedRows = pstmt.executeUpdate();
 
-            System.out.println("DEBUG: Số dòng bị ảnh hưởng khi update: " + affectedRows);
 
             return affectedRows > 0;
 
         } catch (SQLException e) {
-            System.out.println("DEBUG: Lỗi SQL khi update sản phẩm:");
             e.printStackTrace();
             return false;
         }
+    }
+
+    public static boolean isProductIdExists(String id) {
+        // Ví dụ giả định bạn dùng JDBC
+        String sql = "SELECT COUNT(*) FROM products WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

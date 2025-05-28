@@ -1,4 +1,5 @@
 package com.hkt.app.controller;
+
 import javafx.application.Platform;
 import com.hkt.app.model.Product;
 import com.hkt.app.dao.UnitDAO;
@@ -30,7 +31,8 @@ import java.util.ResourceBundle;
 
 public class AddProductController implements Initializable {
 
-
+    @FXML
+    private Button btnReset;
     @FXML
     private Button btnCreate;
 
@@ -54,11 +56,12 @@ public class AddProductController implements Initializable {
 
     @FXML
     private TextField tfQuantity;
-
+    private Product originalProduct;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Load dữ liệu đơn vị
+        System.out.println("=-------------Selected value in cbUnit: " + cbUnit.getValue());
+
         List<Unit> units = UnitDAO.getAllUnits();
         ObservableList<String> unitNames = FXCollections.observableArrayList();
         for (Unit u : units) {
@@ -66,7 +69,6 @@ public class AddProductController implements Initializable {
         }
         cbUnit.setItems(unitNames);
 
-        // Load dữ liệu danh mục
         List<Category> categories = CategoryDAO.getAllCategories();
         ObservableList<String> categoryNames = FXCollections.observableArrayList();
         for (Category c : categories) {
@@ -74,41 +76,26 @@ public class AddProductController implements Initializable {
         }
         cbCategory.setItems(categoryNames);
 
-        // Load trạng thái
-        cbStatus.setItems(FXCollections.observableArrayList("Còn hàng", "Hết hàng"));
+        cbStatus.setItems(FXCollections.observableArrayList("Available", "Out of stock"));
     }
 
     @FXML
     void changToAdd(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/addProduct.fxml"));
-        Parent root = fxmlLoader.load();
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setWidth(1220);
-        stage.setHeight(660);
-        stage.setResizable(false);
-        stage.setTitle("Convenient Store Management");
-        stage.setScene(scene);
-        stage.show();
+        changeScene(event, "/view/addProduct.fxml");
     }
 
     @FXML
     void changToDashboard(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/dashboard.fxml"));
-        Parent root = fxmlLoader.load();
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setWidth(1220);
-        stage.setHeight(660);
-        stage.setResizable(false);
-        stage.setTitle("Convenient Store Management");
-        stage.setScene(scene);
-        stage.show();
+        changeScene(event, "/view/dashboard.fxml");
     }
 
     @FXML
     void changToProduct(ActionEvent event) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/product.fxml"));
+        changeScene(event, "/view/product.fxml");
+    }
+
+    private void changeScene(ActionEvent event, String fxmlPath) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(fxmlPath));
         Parent root = fxmlLoader.load();
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
@@ -127,47 +114,127 @@ public class AddProductController implements Initializable {
         tfQuantity.setText(String.valueOf(product.getQuantity()));
         tfId.setDisable(true);
 
-        // Load danh sách tên đơn vị
         List<Unit> units = UnitDAO.getAllUnits();
         ObservableList<String> unitNames = FXCollections.observableArrayList();
-        for (Unit u : units) {
-            unitNames.add(u.getName());
-        }
+        units.forEach(u -> unitNames.add(u.getName()));
         cbUnit.setItems(unitNames);
 
-        // Load danh sách tên danh mục
         List<Category> categories = CategoryDAO.getAllCategories();
         ObservableList<String> categoryNames = FXCollections.observableArrayList();
-        for (Category c : categories) {
-            categoryNames.add(c.getName());
-        }
+        categories.forEach(c -> categoryNames.add(c.getName()));
         cbCategory.setItems(categoryNames);
 
-        // Lấy tên đơn vị và danh mục từ id
         String unitName = UnitDAO.getUnitNameById(product.getUnitId());
         String categoryName = CategoryDAO.getCategoryNameById(product.getCategoryId());
 
-        // Set giá trị tương ứng trong dropdown
-        if (unitName != null && unitNames.contains(unitName)) {
-            cbUnit.setValue(unitName);
+        if (unitName != null) {
+            cbUnit.getSelectionModel().select(unitName);
+        }
+        if (categoryName != null) {
+            cbCategory.getSelectionModel().select(categoryName);
         }
 
-        if (categoryName != null && categoryNames.contains(categoryName)) {
-            cbCategory.setValue(categoryName);
-        }
+        cbStatus.setValue("1".equals(product.getStatus()) ? "Available" : "Out of stock");
 
-        // Set trạng thái
-        cbStatus.setValue("1".equals(product.getStatus()) ? "Còn hàng" : "Hết hàng");
+        this.originalProduct = new Product(
+                product.getId(),
+                product.getName(),
+                product.getPrice(),
+                product.getUnitId(),
+                unitName,
+                product.getQuantity(),
+                product.getCategoryId(),
+                categoryName,
+                product.getStatus()
+        );
     }
-
-
-
-
-
-
 
     @FXML
     private void handleCreateProduct(ActionEvent event) {
+        try {
+            String id = tfId.getText().trim();
+            String name = tfName.getText().trim();
+            String priceText = tfPrice.getText().trim();
+            String quantityText = tfQuantity.getText().trim();
+            String unitName = cbUnit.getValue();
+            String categoryName = cbCategory.getValue();
+            String statusText = cbStatus.getValue();
+
+            if (id.isEmpty() || name.isEmpty() || priceText.isEmpty() || quantityText.isEmpty()
+                    || unitName == null || categoryName == null || statusText == null) {
+                showAlert(Alert.AlertType.WARNING, "Input Error", null, "Please fill in all the fields.");
+                return;
+            }
+
+            double price;
+            try {
+                price = Double.parseDouble(priceText);
+                if (price < 0) {
+                    showAlert(Alert.AlertType.WARNING, "Input Error", null, "Price must be a positive number.");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                showAlert(Alert.AlertType.WARNING, "Input Error", null, "Price must be a valid number.");
+                return;
+            }
+
+            int quantity;
+            try {
+                quantity = Integer.parseInt(quantityText);
+                if (quantity < 0) {
+                    showAlert(Alert.AlertType.WARNING, "Input Error", null, "Quantity must be a positive integer.");
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                showAlert(Alert.AlertType.WARNING, "Input Error", null, "Quantity must be a valid integer.");
+                return;
+            }
+
+            if (ProductDAO.isProductIdExists(id)) {
+                showAlert(Alert.AlertType.WARNING, "Input Error", null, "Product ID already exists. Please use a different ID.");
+                return;
+            }
+
+            String status = "Out of stock".equals(statusText) ? "0" : "1";
+
+            int unitId = UnitDAO.getUnitIdByName(unitName);
+            int categoryId = CategoryDAO.getCategoryIdByName(categoryName);
+
+            if (unitId == -1) {
+                showAlert(Alert.AlertType.WARNING, "Input Error", null, "Invalid unit.");
+                return;
+            }
+            if (categoryId == -1) {
+                showAlert(Alert.AlertType.WARNING, "Input Error", null, "Invalid category.");
+                return;
+            }
+
+            Product newProduct = new Product(id, name, price, unitId, unitName, quantity, categoryId, categoryName, status);
+            boolean success = ProductDAO.insertProduct(newProduct);
+
+            if (success) {
+                showAlert(Alert.AlertType.INFORMATION, "Success", null, "Product added successfully!");
+                changToProduct(event);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Failure", null, "Failed to add product. Please try again.");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "System Error", null, "A system error occurred. Please try again.");
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String header, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void handleUpdateProduct(ActionEvent event) {
         try {
             String id = tfId.getText().trim();
             String name = tfName.getText().trim();
@@ -178,113 +245,84 @@ public class AddProductController implements Initializable {
             String statusText = cbStatus.getValue();
 
             if (id.isEmpty() || name.isEmpty() || unitName == null || categoryName == null || statusText == null) {
-                System.out.println("Vui lòng nhập đầy đủ thông tin.");
+                System.out.println("Please fill in all the fields.");
                 return;
             }
 
-            String status = "Hết hàng".equals(statusText) ? "0" : "1";
+            String status = "Out of stock".equals(statusText) ? "0" : "1";
+
             int unitId = UnitDAO.getUnitIdByName(unitName);
-            int categoryId = CategoryDAO.getCategoryIdByName(categoryName);
-
-            // Tạo đối tượng Product với đầy đủ trường
-            Product newProduct = new Product(id, name, price, unitId, quantity, categoryId, categoryName, status);
-
-            // Gọi DAO để lưu
-            boolean success = ProductDAO.insertProduct(newProduct);
-
-            if (success) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Thành công");
-                alert.setHeaderText(null);
-                alert.setContentText("Sản phẩm đã được thêm thành công!");
-                alert.showAndWait();
-
-                changToProduct(event);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Thất bại");
-                alert.setHeaderText(null);
-                alert.setContentText("Không thể thêm sản phẩm. Vui lòng thử lại!");
-                alert.showAndWait();
+            if (unitId == -1) {
+                System.out.println("Invalid unit.");
+                return;
             }
 
+            int categoryId = CategoryDAO.getCategoryIdByName(categoryName);
+            if (categoryId == -1) {
+                System.out.println("Invalid category.");
+                return;
+            }
+
+            Product updatedProduct = new Product(id, name, price, unitId, unitName, quantity, categoryId, categoryName, status);
+            boolean success = ProductDAO.updateProduct(updatedProduct);
+
+            Alert alert;
+            if (success) {
+                alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Success");
+                alert.setContentText("Product updated successfully!");
+            } else {
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Failure");
+                alert.setContentText("Failed to update product. Please try again.");
+            }
+            alert.setHeaderText(null);
+            alert.showAndWait();
+            changToProduct(event);
 
         } catch (NumberFormatException e) {
-            System.out.println("Giá tiền và số lượng phải là số hợp lệ.");
+            System.out.println("Price and quantity must be valid numbers.");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void resetForm() {
+    @FXML
+    private void handleResetForm() {
+        if (originalProduct != null) {
+            tfId.setText(originalProduct.getId());
+            tfName.setText(originalProduct.getName());
+            tfPrice.setText(String.valueOf(originalProduct.getPrice()));
+            tfQuantity.setText(String.valueOf(originalProduct.getQuantity()));
+            cbUnit.getSelectionModel().select(originalProduct.getUnitName());
+            cbCategory.getSelectionModel().select(originalProduct.getCategoryName());
+            cbStatus.setValue("1".equals(originalProduct.getStatus()) ? "Available" : "Out of stock");
+        }
+    }
+
+    @FXML
+    private void handleResetFormClear() {
         tfId.clear();
         tfName.clear();
         tfPrice.clear();
         tfQuantity.clear();
+
+        ObservableList<String> unitItems = cbUnit.getItems();
+        cbUnit.setItems(null);
+        cbUnit.setItems(unitItems);
+        cbUnit.getSelectionModel().clearSelection();
         cbUnit.setValue(null);
+
+        ObservableList<String> categoryItems = cbCategory.getItems();
+        cbCategory.setItems(null);
+        cbCategory.setItems(categoryItems);
+        cbCategory.getSelectionModel().clearSelection();
         cbCategory.setValue(null);
+
+        ObservableList<String> statusItems = cbStatus.getItems();
+        cbStatus.setItems(null);
+        cbStatus.setItems(statusItems);
+        cbStatus.getSelectionModel().clearSelection();
         cbStatus.setValue(null);
     }
-    @FXML
-    private void handleUpdateProduct(ActionEvent event) {
-        try {
-            String id = tfId.getText().trim();
-            String name = tfName.getText().trim();
-            double price = Double.parseDouble(tfPrice.getText().trim());
-            String unitName = cbUnit.getValue();  // Lấy tên đơn vị
-            int quantity = Integer.parseInt(tfQuantity.getText().trim());
-            String categoryName = cbCategory.getValue();
-            String statusText = cbStatus.getValue();
-            if (id.isEmpty() || name.isEmpty() || unitName == null || categoryName == null || statusText == null) {
-                System.out.println("Vui lòng nhập đầy đủ thông tin.");
-                return;
-            }
-
-            // Chuyển trạng thái sang giá trị trong DB (0 hoặc 1)
-            String status = "Hết hàng".equals(statusText) ? "0" : "1";
-
-            // Lấy id của đơn vị dựa trên tên
-            int unitId = UnitDAO.getUnitIdByName(unitName);
-            if (unitId == -1) {
-                System.out.println("Đơn vị không hợp lệ.");
-                return;
-            }
-
-            // Lấy id của category dựa trên tên
-            int categoryId = CategoryDAO.getCategoryIdByName(categoryName);
-            if (categoryId == -1) {
-                System.out.println("Danh mục không hợp lệ.");
-                return;
-            }
-
-            // Tạo đối tượng Product với unitId, categoryId
-            Product updatedProduct = new Product(id, name, price, unitId, quantity, categoryId, categoryName, status);
-
-            // Gọi hàm cập nhật
-            boolean success = ProductDAO.updateProduct(updatedProduct);
-
-            if (success) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Thành công");
-                alert.setHeaderText(null);
-                alert.setContentText("Sản phẩm đã được thêm thành công!");
-                alert.showAndWait();
-
-                changToProduct(event);
-            } else {
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle("Thất bại");
-                alert.setHeaderText(null);
-                alert.setContentText("Không thể thêm sản phẩm. Vui lòng thử lại!");
-                alert.showAndWait();
-            }
-
-        } catch (NumberFormatException e) {
-            System.out.println("Giá tiền và số lượng phải là số hợp lệ.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
 }
