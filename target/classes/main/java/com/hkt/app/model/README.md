@@ -1,1 +1,0 @@
-# JavaFX model classes for the application.

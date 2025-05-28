@@ -1,1 +1,0 @@
-# JavaFx Public images, icons, and other resources
