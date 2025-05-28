@@ -1,5 +1,6 @@
 package com.hkt.app.controller;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
 import com.hkt.app.database.DBConnection;
 import com.hkt.app.model.Product;
 import javafx.collections.FXCollections;
@@ -25,13 +26,19 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
-        import java.util.ResourceBundle;
+import java.util.ResourceBundle;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import java.util.Optional;
 
 public class ProductController implements Initializable {
 
     @FXML
-    private ImageView avatarImage1;
+    private javafx.scene.control.TextField txtSearch;
 
+
+    @FXML
+    private ImageView avatarImage1;
     @FXML
     private TableColumn<Product, Void> colActions;
 
@@ -51,7 +58,8 @@ public class ProductController implements Initializable {
     private TableColumn<Product, Double> colPrice;
 
     @FXML
-    private TableColumn<Product, String> colStatus;
+    TableColumn<Product, String> colStatus = new TableColumn<>("Trạng thái");
+//    private TableColumn<Product, String> colStatus;
 
     @FXML
     private TableColumn<Product, String> colUnit;
@@ -170,7 +178,15 @@ public class ProductController implements Initializable {
         colUnit.setCellValueFactory(new PropertyValueFactory<>("unitName"));
         colQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         colCategory.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colStatus.setCellValueFactory(cellData -> {
+            String status = cellData.getValue().getStatus(); // bây giờ là String
+            String display = "Hết hàng";
+            if ("1".equals(status)) {
+                display = "Còn hàng";
+            }
+            return new ReadOnlyStringWrapper(display);
+        });
+
 //        colImage.setCellValueFactory(new PropertyValueFactory<>("imageUrl"));
 
         addButtonToTable();
@@ -248,7 +264,7 @@ public class ProductController implements Initializable {
 
                         btnDelete.setOnAction(event -> {
                             Product product = getTableView().getItems().get(getIndex());
-                            deleteProduct(product);
+                            confirmAndDeleteProduct(product);
                         });
                     }
 
@@ -291,13 +307,12 @@ public class ProductController implements Initializable {
         Parent root = loader.load();
 
         AddProductController controller = loader.getController();
-        controller.setProduct(product);
+        controller.setProduct(product); // <-- Gọi sau khi đã load xong FXML
 
         Stage stage;
         if (event != null) {
             stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         } else {
-            // Nếu event null (ví dụ gọi từ nút sửa), lấy stage từ tableView
             stage = (Stage) tvProducts.getScene().getWindow();
         }
 
@@ -305,6 +320,7 @@ public class ProductController implements Initializable {
         stage.setScene(scene);
         stage.show();
     }
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -325,4 +341,36 @@ public class ProductController implements Initializable {
             return row;
         });
     }
+    private void confirmAndDeleteProduct(Product product) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Xác nhận xóa");
+        alert.setHeaderText("Bạn có chắc muốn xóa sản phẩm này không?");
+        alert.setContentText("Sản phẩm: " + product.getName());
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            deleteProduct(product);
+        }
+        // Nếu người dùng chọn Cancel hoặc đóng hộp thoại thì không làm gì
+    }
+    @FXML
+    private void handleSearch(ActionEvent event) {
+        String keyword = txtSearch.getText().toLowerCase().trim();
+        if (keyword.isEmpty()) {
+            tvProducts.setItems(getProducts()); // reset nếu không nhập gì
+            return;
+        }
+
+        ObservableList<Product> filteredList = FXCollections.observableArrayList();
+        for (Product p : getProducts()) {
+            if (p.getId().toLowerCase().contains(keyword) || p.getName().toLowerCase().contains(keyword)) {
+                filteredList.add(p);
+            }
+        }
+
+        tvProducts.setItems(filteredList);
+    }
+
+
+
 }
