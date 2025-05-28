@@ -10,14 +10,14 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         // Load giao diện từ FXMLs
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/dashboard.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/view/login.fxml"));
         Parent root = fxmlLoader.load();
 
         // Tạo Scene từ root
         Scene scene = new Scene(root);
 
-        stage.setWidth(1220);
-        stage.setHeight(660);
+        stage.setWidth(1000);
+        stage.setHeight(600);
         stage.setResizable(false);
 
         // Cài đặt title và scene

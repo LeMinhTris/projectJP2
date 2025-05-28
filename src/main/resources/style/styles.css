@@ -1,0 +1,95 @@
+#khungChat {
+    -fx-cursor: hand;
+
+-fx-background-color: white;
+-fx-background-radius: 10;
+-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);
+}
+
+.shadow-textfield {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: transparent;
+
+    -fx-padding: 0 0 0 28; /* Đẩy chữ qua phải để chừa chỗ icon */
+
+    /* Bóng đổ tinh tế */
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 6, 0.3, 0, 2);
+
+    -fx-font-size: 13px;
+    -fx-text-fill: #333;
+    -fx-prompt-text-fill: #aaa; /* Màu placeholder */
+}
+
+.text-field-login {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: #dddddd;
+    -fx-border-width: 1px;
+    -fx-padding: 10 10 10 40
+    ; /* padding left lớn để chừa chỗ icon */
+    -fx-font-size: 16px;
+    -fx-text-fill: #333333;
+    -fx-prompt-text-fill: #bbbbbb; /* placeholder nhạt */
+}
+
+.rounded-outline-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #4471C4;
+    -fx-border-width: 2px;
+    -fx-border-radius: 25px;
+    -fx-background-radius: 25px;
+    -fx-text-fill: #4471C4;
+    -fx-font-weight: bold;
+    -fx-padding: 8 24 8 24;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 4, 0.3, 0, 2);
+    -fx-transition: all 0.3s ease;
+}
+
+/* Hover */
+.rounded-outline-button:hover {
+    -fx-background-color: #4471C4;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Khi nhấn */
+.rounded-outline-button:pressed {
+    -fx-background-color: #365ea8;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Nút Sign in chính */
+.button-signin {
+    -fx-background-color: #4471C4;
+    -fx-background-radius: 25;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 1);
+    -fx-transition: all 0.3s ease;
+}
+
+/* Hover */
+.button-signin:hover {
+    -fx-background-color:  #4471C4;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Khi nhấn */
+.rounded-outline-button:pressed {
+    -fx-background-color: #365ea8;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}

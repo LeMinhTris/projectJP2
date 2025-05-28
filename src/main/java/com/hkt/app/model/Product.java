@@ -62,10 +62,6 @@ public class Product {
         return this.status;
     }
 
-//    public String getImage() {
-//        return this.imageUrl;
-//    }
-
     // SETTER
 
     public void setId(String id) {
@@ -96,7 +92,4 @@ public class Product {
         this.status = status;
     }
 
-//    public void setImage(String imageUrl) {
-//        this.imageUrl = imageUrl;
-//    }
 }
