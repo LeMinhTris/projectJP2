@@ -2,19 +2,29 @@
 package com.hkt.app.model;
 
 public class Category {
-    private String id;
+    private int id;
     private String name;
 
-    public Category(String id, String name) {
+    public Category(int id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public String getId() { return id; }
-    public String getName() { return name; }
+    // getter + setter
+    public int getId() {
+        return id;
+    }
 
-    @Override
-    public String toString() {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
         return name;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
+
