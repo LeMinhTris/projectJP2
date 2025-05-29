@@ -9,6 +9,9 @@ import com.hkt.app.dao.ProductDAO;
 import com.hkt.app.model.Unit;
 import com.hkt.app.model.Category;
 import javafx.scene.control.Alert;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.stream.Collectors;
 
 import javafx.application.Platform;
@@ -29,6 +32,53 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+
+//atris
+import javafx.application.Platform;
+import com.hkt.app.model.Product;
+import com.hkt.app.model.ProductData;
+import com.hkt.app.dao.UnitDAO;
+import com.hkt.app.dao.CategoryDAO;
+import com.hkt.app.dao.ProductDAO;
+import com.hkt.app.model.Unit;
+import com.hkt.app.model.Category;
+import javafx.scene.control.Alert;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.stream.Collectors;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -469,4 +519,101 @@ public class AddProductController implements Initializable {
 //
 //        chatBox.getChildren().add(botHBox);
 //    }
+
+    @FXML
+    private void importFromExcel(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Chọn file Excel");
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Excel Files", "*.xlsx", "*.xls", "*.xlsm", "*.csv")
+        );
+        File file = fileChooser.showOpenDialog(((Node) event.getSource()).getScene().getWindow());
+
+        if (file != null) {
+            try (FileInputStream fis = new FileInputStream(file);
+                 XSSFWorkbook workbook = new XSSFWorkbook(fis)) {
+
+                XSSFSheet sheet = workbook.getSheetAt(0);
+
+                for (Row row : sheet) {
+                    if (row.getRowNum() == 0 || isRowEmpty(row)) continue;
+
+                    try {
+                        String id = getCellString(row.getCell(0));
+                        String name = getCellString(row.getCell(1));
+                        double price = getCellDouble(row.getCell(2));
+                        String unitName = getCellString(row.getCell(3));
+                        int quantity = (int) getCellDouble(row.getCell(4));
+                        String categoryName = getCellString(row.getCell(5));
+                        String statusText = getCellString(row.getCell(6));
+
+                        int unitId = UnitDAO.getUnitIdByName(unitName);
+                        int categoryId = CategoryDAO.getCategoryIdByName(categoryName);
+
+                        if (unitId == -1 || categoryId == -1) {
+                            throw new Exception("Skipped products where no unit or category was found in the database");
+                        }
+
+                        if (ProductDAO.isProductIdExists(id)) {
+                            System.out.println("Duplicate ID products ignored: " + id);
+                            continue; // Bỏ qua sản phẩm đã tồn tại
+                        }
+
+                        String status = "Available".equalsIgnoreCase(statusText) ? "1" : "0";
+
+                        Product product = new Product(id, name, price, unitId, unitName, quantity, categoryId, categoryName, status);
+                        boolean success = ProductDAO.insertProduct(product);
+
+                        if (!success) {
+                            throw new Exception("Cannot insert product into Database");
+                        }
+
+                    } catch (Exception e) {
+                        showAlert(Alert.AlertType.WARNING, "Lỗi dòng " + (row.getRowNum() + 1), null, e.getMessage());
+                    }
+                }
+
+                showAlert(Alert.AlertType.INFORMATION, "More success", null, "Successfully added product from Excel file.");
+
+            } catch (IOException e) {
+                showAlert(Alert.AlertType.ERROR, "Lỗi đọc file", null, e.getMessage());
+            }
+        }
+    }
+
+    //method support importFromExcel
+    private boolean isRowEmpty(Row row) {
+        for (int i = 0; i < row.getLastCellNum(); i++) {
+            Cell cell = row.getCell(i);
+            if (cell != null && cell.getCellType() != CellType.BLANK) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private String getCellString(Cell cell) {
+        if (cell == null) return "";
+        return switch (cell.getCellType()) {
+            case STRING -> cell.getStringCellValue().trim();
+            case NUMERIC -> String.valueOf((int) cell.getNumericCellValue());
+            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
+            default -> "";
+        };
+    }
+
+    private double getCellDouble(Cell cell) {
+        if (cell == null) return 0.0;
+        return switch (cell.getCellType()) {
+            case STRING -> {
+                try {
+                    yield Double.parseDouble(cell.getStringCellValue());
+                } catch (NumberFormatException e) {
+                    yield 0.0;
+                }
+            }
+            case NUMERIC -> cell.getNumericCellValue();
+            default -> 0.0;
+        };
+    }
 }

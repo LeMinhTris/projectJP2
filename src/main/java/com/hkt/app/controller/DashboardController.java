@@ -263,8 +263,8 @@ public class DashboardController implements Initializable {
         input = input.toLowerCase();
         if (input.contains("hello") || input.contains("xin chào")) {
             return "Chào bạn! Tôi có thể giúp gì?";
-        } else if (input.contains("giờ mở cửa")) {
-            return "Cửa hàng mở từ 8h sáng đến 10h tối mỗi ngày.";
+        } else if (input.contains("sáng lập")) {
+            return "HKT Studio nha bro!!";
         } else if (input.contains("cảm ơn")) {
             return "Không có chi!";
         }

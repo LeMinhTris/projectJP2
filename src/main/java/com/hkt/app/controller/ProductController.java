@@ -23,16 +23,21 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class ProductController implements Initializable {
+    @FXML
+    private ComboBox<String> categoryFilter;
+
     @FXML
     private TextField userInput;
 
@@ -223,6 +228,8 @@ public class ProductController implements Initializable {
 
         tvProducts.setStyle("-fx-font-size: 16px; -fx-alignment: CENTER;");
         tvProducts.setFixedCellSize(40);
+        loadCategoryFilter();
+
     }
 
     private void addButtonToTable() {
@@ -449,4 +456,94 @@ public class ProductController implements Initializable {
 
         tvProducts.setItems(filteredList);
     }
+    @FXML
+    private void exportToCSV(ActionEvent event) {
+        ObservableList<Product> productList = tvProducts.getItems(); // lấy danh sách từ TableView
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("choose place to save file CSV");
+        fileChooser.setInitialFileName("product_export.csv");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+
+        File file = fileChooser.showSaveDialog(((Node) event.getSource()).getScene().getWindow());
+
+        if (file != null) {
+            try (
+                    OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+                    PrintWriter writer = new PrintWriter(osw)
+            ) {
+                // Ghi tiêu đề cột + BOM để Excel nhận đúng UTF-8
+                writer.println('\uFEFF' + "ID,Name,Price,Unit,Quantity,Category,Status");
+
+                // Ghi từng dòng
+                for (Product product : productList) {
+                    writer.printf("%s,%s,%s,%s,%d,%s,%s%n",
+                            product.getId(),
+                            product.getName(),
+                            String.format("$%.2f", product.getPrice()),
+                            product.getUnitName(),
+                            product.getQuantity(),
+                            product.getCategoryName(),
+                            product.getStatusDescription()
+                    );
+                }
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("CSV export successful");
+                alert.setHeaderText(null);
+                alert.setContentText("Saved successfully at:\n" + file.getAbsolutePath());
+                alert.showAndWait();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Lỗi");
+                alert.setHeaderText("Cannot write CSV file");
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
+            }
+        }
+    }
+
+    private void loadCategoryFilter() {
+        ObservableList<String> categories = FXCollections.observableArrayList();
+        categories.add("Show All"); // Hiển thị tất cả mặc định
+
+        String sql = "SELECT name FROM categories";
+        try (Connection conn = connection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                categories.add(rs.getString("name"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        categoryFilter.setItems(categories);
+        categoryFilter.setValue("Show All");
+
+        categoryFilter.setOnAction(e -> filterByCategory());
+    }
+
+    private void filterByCategory() {
+        String selectedCategory = categoryFilter.getValue();
+
+        if (selectedCategory.equals("Show All")) {
+            tvProducts.setItems(getProducts());
+            return;
+        }
+
+        ObservableList<Product> filteredList = FXCollections.observableArrayList();
+        for (Product p : getProducts()) {
+            if (p.getCategoryName().equals(selectedCategory)) {
+                filteredList.add(p);
+            }
+        }
+
+        tvProducts.setItems(filteredList);
+    }
+
 }

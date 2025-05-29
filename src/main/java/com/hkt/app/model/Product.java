@@ -82,7 +82,7 @@ public class Product {
     }
 
     public String getStatusDescription() {
-        return "1".equals(this.status) ? "còn hàng" : "hết hàng";
+        return "1".equals(this.status) ? "Available" : "Out of stock";
     }
 
     // SETTER

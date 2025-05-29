@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="650.0" prefWidth="1200.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.hkt.app.controller.AddProductController">
+   <children>
+
+      <!-- Main Content -->
+      <AnchorPane layoutX="290.0" prefHeight="650.0" prefWidth="930.0">
+         <children>
+            <!-- Top Bar -->
+            <AnchorPane layoutY="12.0" prefHeight="71.0" prefWidth="913.0" style="-fx-background-color: #fff; -fx-background-radius: 5;">
+               <children>
+                  <Label layoutX="28.0" layoutY="17.0" text="Updated Product">
+                     <font>
+                        <Font name="System Bold" size="25.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="796.0" layoutY="15.0" text="HKT Studio">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="avatarImage1" fitHeight="47.0" fitWidth="76.0" layoutX="719.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" style="-fx-background-radius: 30;">
+                     <image>
+                        <Image url="@/img/avartar.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="42.0" fitWidth="45.0" layoutX="614.0" layoutY="19.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@/img/chamHoi.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="34.0" fitWidth="36.0" layoutX="658.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@/img/chuong.png" />
+                     </image>
+                  </ImageView>
+                  <Label layoutX="796.0" layoutY="39.0" text="Admin" textFill="#c7c3c3">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+
+            <!-- Scrollable Form Area -->
+            <ScrollPane fitToWidth="true" layoutY="95.0" prefHeight="579.0" prefWidth="930.0" vbarPolicy="AS_NEEDED" AnchorPane.rightAnchor="0.0">
+               <content>
+                  <VBox alignment="TOP_LEFT" prefWidth="880.0" spacing="20.0" style="-fx-padding: 20; -fx-background-color: #f0f1f7; -fx-background-radius: 6;">
+                     <!-- Product ID -->
+                     <VBox spacing="5">
+                        <Label text="Product ID">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="tfId" prefHeight="8.0" prefWidth="875.0" />
+                     </VBox>
+
+                     <!-- Product Name -->
+                     <VBox spacing="5">
+                        <Label text="Product Name">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="tfName" prefHeight="9.0" prefWidth="875.0" />
+                     </VBox>
+
+                     <!-- Product Price -->
+                     <VBox spacing="5">
+                        <Label text="Product Price">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="tfPrice" prefHeight="4.0" prefWidth="875.0" />
+                     </VBox>
+
+                     <!-- Product Unit -->
+                     <VBox spacing="5">
+                        <Label text="Product Unit">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="cbUnit" prefHeight="39.0" prefWidth="875.0" promptText="Show All" style="-fx-background-color: #fff; -fx-background-radius: 6;" />
+                     </VBox>
+
+                     <!-- Product Quantity -->
+                     <VBox spacing="5">
+                        <Label text="Product Quantity">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="tfQuantity" prefHeight="0.0" prefWidth="875.0" />
+                     </VBox>
+
+                     <!-- Product Category -->
+                     <VBox spacing="5">
+                        <Label text="Product Category">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="cbCategory" prefHeight="39.0" prefWidth="875.0" promptText="Show All" style="-fx-background-color: #fff; -fx-background-radius: 6;" />
+                     </VBox>
+
+                     <!-- Product Status -->
+                     <VBox spacing="5">
+                        <Label text="Product Status">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <ComboBox fx:id="cbStatus" prefHeight="39.0" prefWidth="875.0" promptText="Show All" style="-fx-background-color: #fff; -fx-background-radius: 6;" />
+                     </VBox>
+
+                     <!-- Product Image -->
+
+                     <!-- Buttons -->
+                     <HBox prefWidth="874.0" spacing="20">
+                        <Button fx:id="btnUpdate" mnemonicParsing="false"
+                                onAction="#handleUpdateProduct"
+                                prefWidth="100.0"
+                                style="-fx-background-radius: 5; -fx-background-color: #007BFF;"
+                                text="Update" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Button>
+
+                        <Button fx:id="btnReset" mnemonicParsing="false" prefWidth="100.0"
+                                onAction="#handleResetForm"
+                                style="-fx-background-radius: 5; -fx-background-color: #a6a6a6;"
+                                text="Reset" textFill="WHITE">
+                           <font>
+                              <Font name="System Bold" size="14.0" />
+                           </font>
+                        </Button>
+
+                     </HBox>
+
+                     <!-- Product Description -->
+                     <VBox spacing="5" visible="false">
+                        <Label text="Product Description">
+                           <font>
+                              <Font name="System Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <TextField prefHeight="42.0" prefWidth="880.0" />
+                     </VBox>
+                  </VBox>
+               </content>
+            </ScrollPane>
+         </children>
+         <padding>
+            <Insets right="20.0" />
+         </padding>
+      </AnchorPane>
+      <AnchorPane prefHeight="675.0" prefWidth="270.0" style="-fx-background-color: #4471C4;">
+         <children>
+            <Label alignment="CENTER" layoutY="46.0" prefHeight="47.0" prefWidth="270.0" text="P r o d o" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="32.0" />
+               </font>
+            </Label>
+            <Button layoutX="14.0" layoutY="141.0" mnemonicParsing="false" onAction="#changToDashboard" prefHeight="46.0" prefWidth="245.0" style="-fx-background-color: transparent;" text="Dashboard         " textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="22.0" />
+               </font>
+            </Button>
+            <Button layoutX="14.0" layoutY="195.0" mnemonicParsing="false" onAction="#changToProduct" prefHeight="46.0" prefWidth="245.0" style="-fx-background-color: #f0f1f1;" text="Products             ">
+               <font>
+                  <Font name="System Bold" size="22.0" />
+               </font>
+            </Button>
+            <Button layoutX="14.0" layoutY="248.0" mnemonicParsing="false" onAction="#changToAdd" prefHeight="46.0" prefWidth="245.0" style="-fx-background-color: transparent;" text="Add Products     " textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="22.0" />
+               </font>
+            </Button>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
