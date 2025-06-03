@@ -66,3 +66,7 @@ ALTER TABLE products
 ADD CONSTRAINT fk_product_category
 FOREIGN KEY (category_id)
 REFERENCES categories(id);
+
+-- Thay đổi kiểu dữ liệu cột status thành NVARCHAR
+ALTER TABLE products
+ALTER COLUMN status NVARCHAR(50);
