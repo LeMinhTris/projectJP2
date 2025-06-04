@@ -8,13 +8,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DBConnection {
-    private static Connection conn = null;
+
+//  private static
     private static final Logger logger = Logger.getLogger(DBConnection.class.getName());
 
     public static Connection getConnection() {
-        if (conn != null) {
-            return conn;
-        }
+        Connection conn = null;
+        
         try {
             Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
 
